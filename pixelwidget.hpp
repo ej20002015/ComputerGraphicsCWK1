@@ -35,6 +35,8 @@ public:
   // Use the body of this function to experiment with rendering algorithms
   void DefinePixelValues();
 
+  void DrawLine(float x1, float y1, float x2, float y2);
+
 protected:
 
   virtual void paintEvent(QPaintEvent*);
