@@ -16,9 +16,18 @@ void PixelWidget::DrawLine(float x1, float y1, float x2, float y2)
   // Line: x = (1 - t) * x1 + t * x2;
   //       y = (1 - t) * y1 + t * y2;
 
-  float lineDistance = sqrt(pow(x2 - x1 + 1.0f, 2.0f) + pow(y2 - y1 + 1.0f, 2.0f));
+  float dx = x2 -x1;
+  float dy = y2 - y1;
+
+  //This is good
+  int steps = abs(dx) == abs(dy)
+            ? abs(dx) : abs(dx) + abs(dy);
+
+  float stepSize = 1.0f / steps;
+
+  /* float lineDistance = sqrt(pow(x2 - x1 + 1.0f, 2.0f) + pow(y2 - y1 + 1.0f, 2.0f));
   float stepSize = 1.0f / lineDistance;
-  stepSize /= (70);
+  stepSize /= (70); */
   std::cout << "stepSize: " << stepSize << std::endl;
 
   //float stepSize = 0.01f;
