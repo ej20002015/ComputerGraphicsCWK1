@@ -14,63 +14,41 @@
 
 void PixelWidget::DrawLine(float x1, float y1, float x2, float y2)
 {
-  // Line: x = (1 - t) * x1 + t * x2;
-  //       y = (1 - t) * y1 + t * y2;
+  float dx = x2 - x1;
+  float dy = y2 - y1;
+  float absDx = fabs(dx);
+  float absDy = fabs(dy);
 
-  int dx = static_cast<int>(fabs(x2 - x1));
-  int dy = static_cast<int>(fabs(y2 - y1));
+  int dxSign = (dx > 0) ? 1 : -1;
+  int dySign = (dy > 0) ? 1 : -1;
 
-  std::cout << "dx: " << dx << " dy: " << dy << std::endl;
-
-  std::vector<float> pointValues;
-  pointValues.push_back(ceil(x1) - x1);
-  pointValues.push_back(ceil(x2) - x2);
-  pointValues.push_back(ceil(y1) - y1);
-  pointValues.push_back(ceil(y2) - y2);
-
-  float minNonZeroDelta = 1.0f;
-  for (int i = 0; i < pointValues.size(); i++)
+  int x = x1, y = y1;
+  SetPixel(x, y, {255, 255, 255});
+  for (int ix = 0, iy = 0; ix < absDx || iy < absDy;)
   {
-    float value = pointValues[i];
-    if (value && value < minNonZeroDelta)
-      minNonZeroDelta = value;
+    //Are we going to go up, down or diagonally
+    float decision = (1 + 2 * ix) * absDy - (1 + 2 * iy) * absDx;
+
+    if (!decision)
+    {
+      x += dxSign;
+      y += dySign;
+      ix++;
+      iy++;
+    }
+    else if (decision < 0)
+    {
+      x += dxSign;
+      ix++;
+    }
+    else
+    {
+      y += dySign;
+      iy++;
+    }
+    
+    SetPixel(x, y, {255, 255, 255});
   }
-
-  printf("minOverall: %.10f", minNonZeroDelta);
-
-  //This gets quite close
-  float steps = (dx + dy) * (1 / minNonZeroDelta);
-
-  //steps = 100000;
-
-  if (!steps)
-    return;
-
-  float stepSize = 1.0f / steps;
-
-  /* float lineDistance = sqrt(pow(x2 - x1 + 1.0f, 2.0f) + pow(y2 - y1 + 1.0f, 2.0f));
-  float stepSize = 1.0f / lineDistance;
-  stepSize /= (70); */
-  std::cout << "steps: " << steps << std::endl;
-
-  //float stepSize = 0.01f;
-  for (unsigned int i = 0; i < steps + 1; i++)
-  {
-    float t = i * (1.0f / steps);
-    printf("t: %.10f\n", t);
-
-    float x = ((1 - t) * x1 + t * x2);// + (stepSize / 2.0f);
-    float y = ((1 - t) * y1 + t * y2);// + (stepSize / 2.0f);
-    //std::cout << "epsilon value: " << std::numeric_limits<float>::epsilon();
-    //float y = (1 - t) * y1 + t * y2;
-    printf("%.10f\n", x);
-    printf("%.10f\n", y);
-    std::cout << "FLOAT: (" << x << ", " << y << ")" << std::endl;
-    std::cout << "UINT:  (" << static_cast<unsigned int>(x) << ", " << static_cast<unsigned int>(y) << ")" << std::endl;
-    SetPixel(static_cast<unsigned int>(x), static_cast<unsigned int>(y), {255, 255, 255});
-  }
-
-  std::cout << "manhattan distance: " << dx + dy << std::endl;
 }
 
 
