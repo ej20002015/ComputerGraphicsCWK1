@@ -6,11 +6,11 @@
 #include <QLabel>
 #include <QDesktopWidget>
 #include <iostream>
+#include <vector>
 #include <fstream>
 #include <limits>
 #include <math.h>
 #include "pixelwidget.hpp"
-
 
 void PixelWidget::DrawLine(float x1, float y1, float x2, float y2)
 {
@@ -22,10 +22,26 @@ void PixelWidget::DrawLine(float x1, float y1, float x2, float y2)
 
   std::cout << "dx: " << dx << " dy: " << dy << std::endl;
 
-  //This is good
-  int steps = dx == dy ? dx : dx + dy;
+  std::vector<float> pointValues;
+  pointValues.push_back(ceil(x1) - x1);
+  pointValues.push_back(ceil(x2) - x2);
+  pointValues.push_back(ceil(y1) - y1);
+  pointValues.push_back(ceil(y2) - y2);
 
-  //steps = 100;
+  float minNonZeroDelta = 1.0f;
+  for (int i = 0; i < pointValues.size(); i++)
+  {
+    float value = pointValues[i];
+    if (value && value < minNonZeroDelta)
+      minNonZeroDelta = value;
+  }
+
+  printf("minOverall: %.10f", minNonZeroDelta);
+
+  //This gets quite close
+  float steps = (dx + dy) * (1 / minNonZeroDelta);
+
+  //steps = 100000;
 
   if (!steps)
     return;
@@ -43,8 +59,8 @@ void PixelWidget::DrawLine(float x1, float y1, float x2, float y2)
     float t = i * (1.0f / steps);
     printf("t: %.10f\n", t);
 
-    float x = ((1 - t) * x1 + t * x2) + (stepSize / 2.0f);
-    float y = ((1 - t) * y1 + t * y2) + (stepSize / 2.0f);
+    float x = ((1 - t) * x1 + t * x2);// + (stepSize / 2.0f);
+    float y = ((1 - t) * y1 + t * y2);// + (stepSize / 2.0f);
     //std::cout << "epsilon value: " << std::numeric_limits<float>::epsilon();
     //float y = (1 - t) * y1 + t * y2;
     printf("%.10f\n", x);
@@ -54,6 +70,7 @@ void PixelWidget::DrawLine(float x1, float y1, float x2, float y2)
     SetPixel(static_cast<unsigned int>(x), static_cast<unsigned int>(y), {255, 255, 255});
   }
 
+  std::cout << "manhattan distance: " << dx + dy << std::endl;
 }
 
 
@@ -108,9 +125,9 @@ void PixelWidget::paintEvent( QPaintEvent * )
   //SetPixel(14, 1, {255, 0, 0});
   //SetPixel(50, 60, {255, 0, 0});
   //DrawLine(14.0f, 1.0f, 50.0f, 60.0f);
-  SetPixel(3, 50, {255, 0, 0});
-  SetPixel(50, 3, {255, 0, 0});
-  DrawLine(3.0f, 50.0f, 50.0f, 3.0f);
+  SetPixel(2, 50, {255, 0, 0});
+  SetPixel(50, 2, {255, 0, 0});
+  DrawLine(2.99f, 50.0f, 50.0f, 2.99f);
   //DrawLine(0.0f, 0.0f, 30.0f, 30.0f);
 
   for (unsigned int i_column = 0 ; i_column < _n_vertical; i_column++)
@@ -126,5 +143,5 @@ void PixelWidget::paintEvent( QPaintEvent * )
 
   //Draw line in Qt to check
   p.setPen(QPen(Qt::red, 0.1));
-  p.drawLine(14, 1, 50, 60);
+  p.drawLine(2, 50, 50, 2);
 }
