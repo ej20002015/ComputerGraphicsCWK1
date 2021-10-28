@@ -20,21 +20,21 @@ void PixelWidget::DrawLine(float x1, float y1, float x2, float y2)
   float dy = y2 - y1;
 
   //This is good
-  int steps = abs(dx) == abs(dy)
-            ? abs(dx) : abs(dx) + abs(dy);
+  int steps = dx == dy ? dx : dx + dy;
 
   float stepSize = 1.0f / steps;
 
   /* float lineDistance = sqrt(pow(x2 - x1 + 1.0f, 2.0f) + pow(y2 - y1 + 1.0f, 2.0f));
   float stepSize = 1.0f / lineDistance;
   stepSize /= (70); */
-  std::cout << "stepSize: " << stepSize << std::endl;
+  std::cout << "steps: " << steps << std::endl;
 
   //float stepSize = 0.01f;
-  for (float t = 0.0f; t < 1.0f + stepSize; t += stepSize)
+  for (unsigned int t = 0; t < steps + 1; t++)
   {
-    float x = (1 - t) * x1 + t * x2;
-    float y = (1 - t) * y1 + t * y2;
+    float x = ((steps - t) * (1.0f / steps)) * x1 + (t * (1.0f / steps) * x2);
+    float y = ((steps - t) * (1.0f / steps)) * y1 + (t * (1.0f / steps) * y2);
+    //float y = (1 - t) * y1 + t * y2;
     std::cout << "FLOAT: (" << x << ", " << y << ")" << std::endl;
     std::cout << "UINT:  (" << static_cast<unsigned int>(x) << ", " << static_cast<unsigned int>(y) << ")" << std::endl;
     SetPixel(static_cast<unsigned int>(x), static_cast<unsigned int>(y), {255, 255, 255});
