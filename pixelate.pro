@@ -8,4 +8,4 @@ INCLUDEPATH += .
 QT += gui widgets
 
 # Input
-SOURCES += mainwindow.cpp pixelwidget.cpp
+SOURCES += mainwindow.cpp pixelwidget.cpp ParameterisedLine.cpp
