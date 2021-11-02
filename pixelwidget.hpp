@@ -11,7 +11,7 @@
 #include <iostream>
 #include <vector>
 #include "RGBVal.hpp"
-#include "ParameterisedLine.hpp"
+#include "Vec2.hpp"
 
 
 class PixelWidget : public QWidget {
@@ -46,7 +46,6 @@ protected:
 private:
 
   std::vector<int> findIntegersInFloatRange(float x, float y);
-  float findIntersection(const ParameterisedLine& line1, const ParameterisedLine& line2);
 
 
 private:
