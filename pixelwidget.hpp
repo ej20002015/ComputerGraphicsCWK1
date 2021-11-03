@@ -36,10 +36,10 @@ public:
   // Use the body of this function to experiment with rendering algorithms
   void DefinePixelValues();
 
-  void DrawLine(const Vec2& point1, const Vec2& point2, const RGBVal& colour1, const RGBVal& colour2);
-  void DrawLinePerfect(const Vec2& point1, const Vec2& point2, bool debugInfo = false);
+  void DrawLine(const Vec2<float>& point1, const Vec2<float>& point2, const RGBVal& colour1, const RGBVal& colour2);
+  void DrawLinePerfect(const Vec2<float>& point1, const Vec2<float>& point2, bool debugInfo = false);
 
-  void DrawTriangle(const Vec2& point1, const Vec2& point2, const Vec2& point3,
+  void DrawTriangle(const Vec2<float>& point1, const Vec2<float>& point2, const Vec2<float>& point3,
                     const RGBVal& colour1, const RGBVal& colour2, const RGBVal& colour3);
 
 protected:

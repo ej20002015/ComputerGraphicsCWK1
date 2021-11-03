@@ -7,7 +7,7 @@ struct Mat2x2
 {
   float elements[2][2];
 
-  friend Vec2 operator*(const Mat2x2& mat, const Vec2& vec);
+  friend Vec2<float> operator*(const Mat2x2& mat, const Vec2<float>& vec);
   friend Mat2x2 operator*(float v, const Mat2x2& mat);
 
   Mat2x2 inverse() const;

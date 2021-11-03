@@ -15,7 +15,6 @@
 
 #include "Vec2.hpp"
 #include "BarycentricCoordinates.hpp"
-#include "PixelCoordinates.hpp"
 
 //#define LINE 2.999f, 49.999f, 49.999f, 2.999f
 //#define LINE 14.0f, 1.0f, 50.0f, 60.0f
@@ -54,7 +53,7 @@ void printVector(const std::vector<T>& vec, const std::string& vectorName)
 //The top left of each pixel is (0,0) in pixel space
 //The interpolated value (colour) of each pixel is scaled by the t value of the midpoint of the line
 //segment that passes through the pixel
-void PixelWidget::DrawLine(const Vec2& point1, const Vec2& point2, const RGBVal& colour1, const RGBVal& colour2)
+void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2, const RGBVal& colour1, const RGBVal& colour2)
 {
   std::cout << "Drawing Line\n" << std::endl;
 
@@ -116,7 +115,7 @@ void PixelWidget::DrawLine(const Vec2& point1, const Vec2& point2, const RGBVal&
   {
     //Substitute the midpoint values of t back into the equation of the line to get the x and y coordinates of the pixel to set 
     float t = tMidpoints[i];
-    Vec2 intersectionPoint =
+    Vec2<float> intersectionPoint =
     {
       (1 - t) * point1.x + t * point2.x,
       (1 - t) * point1.y + t * point2.y
@@ -138,7 +137,7 @@ void PixelWidget::DrawLine(const Vec2& point1, const Vec2& point2, const RGBVal&
   
 }
 
-void PixelWidget::DrawLinePerfect(const Vec2& point1, const Vec2& point2, bool debugInfo)
+void PixelWidget::DrawLinePerfect(const Vec2<float>& point1, const Vec2<float>& point2, bool debugInfo)
 {
   // Line: x = (1 - t) * x1 + t * x2;
   //       y = (1 - t) * y1 + t * y2;
@@ -164,7 +163,7 @@ void PixelWidget::DrawLinePerfect(const Vec2& point1, const Vec2& point2, bool d
   }
 }
 
-void PixelWidget::DrawTriangle(const Vec2& point1, const Vec2& point2, const Vec2& point3,
+void PixelWidget::DrawTriangle(const Vec2<float>& point1, const Vec2<float>& point2, const Vec2<float>& point3,
                   const RGBVal& colour1, const RGBVal& colour2, const RGBVal& colour3)
 {
   //First draw the perimeter of the triange:
@@ -186,14 +185,14 @@ void PixelWidget::DrawTriangle(const Vec2& point1, const Vec2& point2, const Vec
   int minY = static_cast<int>(std::min({ point1.y, point2.y, point3.y }));
   int maxY = static_cast<int>(std::max({ point1.y, point2.y, point3.y }));
 
-  std::vector<PixelCoordinates> pixelCoords;
+  std::vector<Vec2<int>> pixelCoords;
   std::vector<BarycentricCoordinates> baryCoords;
 
   for (int x = minX; x <= maxX && x < static_cast<int>(_n_horizontal); x++)
   {
     for (int y = minY; y <= maxY && x < static_cast<int>(_n_vertical); y++)
     {
-      Vec2 cartesianCoords = { static_cast<float>(x), static_cast<float>(y) };
+      Vec2<float> cartesianCoords = { static_cast<float>(x), static_cast<float>(y) };
       baryCoords.push_back(BarycentricCoordinates(cartesianCoords, point1, point2, point3));
       pixelCoords.push_back({ x, y });
     }
@@ -210,7 +209,7 @@ void PixelWidget::DrawTriangle(const Vec2& point1, const Vec2& point2, const Vec
   for (int i = 0; i < baryCoords.size(); i++)
   {
     BarycentricCoordinates baryCoord = baryCoords[i];
-    PixelCoordinates pixelCoord = pixelCoords[i];
+    Vec2<int> pixelCoord = pixelCoords[i];
 
     bool cond1 = baryCoord.alpha > 0.0f && baryCoord.alpha < 1.0f;
     bool cond2 = baryCoord.beta > 0.0f && baryCoord.beta < 1.0f;
@@ -226,8 +225,7 @@ void PixelWidget::DrawTriangle(const Vec2& point1, const Vec2& point2, const Vec
       interpolatedColour._blue  = static_cast<unsigned int>(baryCoord.alpha * colour1._blue + baryCoord.beta * colour2._blue + baryCoord.gamma * colour3._blue);
   
       SetPixel(pixelCoord.x, pixelCoord.y, interpolatedColour);
-    }
-    
+    }    
   }
 
 }
@@ -289,11 +287,11 @@ void PixelWidget::paintEvent( QPaintEvent * )
   //DrawLinePerfect(LINE);
   //DrawLine(LINE, { 255, 255, 255 }, { 255, 255, 0 });
 
-  Vec2 trianglePoint1 = TRIANGLEP1;
+  Vec2<float> trianglePoint1 = TRIANGLEP1;
   RGBVal triangleColour1 = { 255, 0, 0 };
-  Vec2 trianglePoint2 = TRIANGLEP2;
+  Vec2<float> trianglePoint2 = TRIANGLEP2;
   RGBVal triangleColour2 = { 0, 255, 0 };
-  Vec2 trianglePoint3 = TRIANGLEP3;
+  Vec2<float> trianglePoint3 = TRIANGLEP3;
   RGBVal triangleColour3 = { 0, 0, 255 };
   DrawTriangle(trianglePoint1, trianglePoint2, trianglePoint3, triangleColour1, triangleColour2, triangleColour3);
 

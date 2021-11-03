@@ -1,20 +1,21 @@
 #ifndef _VEC2_
 #define _VEC2_
 
+template<typename T>
 struct Vec2
 {
-  float x, y;
+  T x, y;
 
-  friend Vec2 operator+(const Vec2& v1, const Vec2& v2);
-  friend Vec2 operator+(const Vec2& v1, float v2);
-  friend Vec2 operator+(float v1, const Vec2& v2);
-  friend Vec2 operator-(const Vec2& v1, const Vec2& v2);
-  friend Vec2 operator*(const Vec2& v1, const Vec2& v2);
-  friend Vec2 operator*(const Vec2& v1, float v2);
-  friend Vec2 operator*(float v1, const Vec2& v2);
+  friend Vec2<T> operator+(const Vec2<T>& v1, const Vec2<T>& v2);
+  friend Vec2<T> operator+(const Vec2<T>& v1, float v2);
+  friend Vec2<T> operator+(float v1, const Vec2<T>& v2);
+  friend Vec2<T> operator-(const Vec2<T>& v1, const Vec2<T>& v2);
+  friend Vec2<T> operator*(const Vec2<T>& v1, const Vec2<T>& v2);
+  friend Vec2<T> operator*(const Vec2<T>& v1, float v2);
+  friend Vec2<T> operator*(float v1, const Vec2<T>& v2);
 
-  Vec2 perp();
-  float dot(const Vec2& v);
+  Vec2<T> perp();
+  T dot(const Vec2<T>& v);
   
 };
 

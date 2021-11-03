@@ -2,8 +2,8 @@
 
 #include "Mat2x2.hpp"
 
-BarycentricCoordinates::BarycentricCoordinates(const Vec2& cartesianCoordinates, const Vec2& trianglePoint1,
-                                               const Vec2& trianglePoint2, const Vec2& trianglePoint3)
+BarycentricCoordinates::BarycentricCoordinates(const Vec2<float>& cartesianCoordinates, const Vec2<float>& trianglePoint1,
+                                               const Vec2<float>& trianglePoint2, const Vec2<float>& trianglePoint3)
                                                : p(trianglePoint1), q(trianglePoint2), r(trianglePoint3)
 {
   //Construct the t matrix
@@ -15,7 +15,7 @@ BarycentricCoordinates::BarycentricCoordinates(const Vec2& cartesianCoordinates,
   T.elements[1][1] = q.y - r.y;
 
   //Construct the b vector on the right hand side of the system of equations
-  Vec2 b =
+  Vec2<float> b =
   {
     cartesianCoordinates.x - r.x,
     cartesianCoordinates.y - r.y,
@@ -23,7 +23,7 @@ BarycentricCoordinates::BarycentricCoordinates(const Vec2& cartesianCoordinates,
 
 
   //Compute alpha, beta and gamma by multiplying both sides by T inverse
-  Vec2 alphaAndBeta = T.inverse() * b;
+  Vec2<float> alphaAndBeta = T.inverse() * b;
 
   alpha = alphaAndBeta.x;
   beta = alphaAndBeta.y;
