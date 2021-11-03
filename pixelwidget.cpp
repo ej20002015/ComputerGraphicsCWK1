@@ -29,9 +29,11 @@ void printVector(const std::vector<T>& vec, const std::string& vectorName)
 //#define LINE 0.0, 0.0, 0.0, 75.0
 #define LINE { 0.0, 0.0 }, { 5.0, 10.0 }
 
-#define TRIANGLEP1 { 0.0f, 0.0f }
-#define TRIANGLEP2 { 2.0f, 69.0f }
-#define TRIANGLEP3 { 69.0f, 30.0f }
+#define TRIANGLEP1 { 20.5f, 20.5f }
+#define TRIANGLEP2 { 10.5f, 30.5f }
+#define TRIANGLEP3 { 30.5f, 30.0f }
+
+#define POINT { 25, 25 }
 
 void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2, const RGBVal& colour1, const RGBVal& colour2)
 {
@@ -198,9 +200,33 @@ void PixelWidget::DrawTriangle(const Vec2<float>& point1, const Vec2<float>& poi
   }
 }
 
-bool IsInside(const Vec2<int>& pixelCoordinatesPoint, const Vec2<float>& trianglePoint1, const Vec2<float>& trianglePoint2, const Vec2<float>& trianglePoint3)
+bool PixelWidget::IsInside(const Vec2<int>& pixelCoordinatesPoint, const Vec2<float>& trianglePoint1, const Vec2<float>& trianglePoint2, const Vec2<float>& trianglePoint3)
 {
+  //Determine whether the pixel coordinate is 'above' (same side as the normal pointing inwards) all 3 lines of the triangle
+  //If so, it is in the triangle
   
+  bool aboveLine1 = IsAbove(pixelCoordinatesPoint, trianglePoint1, trianglePoint2);
+  bool aboveLine2 = IsAbove(pixelCoordinatesPoint, trianglePoint2, trianglePoint3);
+  bool aboveLine3 = IsAbove(pixelCoordinatesPoint, trianglePoint3, trianglePoint1);
+
+  if (aboveLine1 && aboveLine2 && aboveLine3)
+    return true;
+  else
+    return false;
+}
+
+bool PixelWidget::IsAbove(const Vec2<int>& pixelCoordinatesPoint, const Vec2<float>& point1, const Vec2<float>& point2)
+{
+  Vec2<float> directionVector = point1 - point2;
+  Vec2<float> lineNormal = directionVector.perp();
+  Vec2<float> pointToTest = { static_cast<float>(pixelCoordinatesPoint.x), static_cast<float>(pixelCoordinatesPoint.y) };
+
+  //Use the normal form of the line to determine if the point is above the line
+
+  if ((pointToTest - point1).dot(lineNormal) > 0.0f)
+    return true;
+  else
+    return false;
 }
 
 
@@ -264,9 +290,18 @@ void PixelWidget::paintEvent( QPaintEvent * )
   RGBVal triangleColour3 = { 0, 0, 255 };
   DrawTriangle(trianglePoint1, trianglePoint2, trianglePoint3, triangleColour1, triangleColour2, triangleColour3);
 
-  DrawLine(trianglePoint1, trianglePoint2, { 255, 255, 255 }, { 255, 255, 255 });
-  DrawLine(trianglePoint2, trianglePoint3, { 255, 255, 255 }, { 255, 255, 255 });
-  DrawLine(trianglePoint3, trianglePoint1, { 255, 255, 255 }, { 255, 255, 255 });
+  //DrawLine(trianglePoint1, trianglePoint2, { 255, 255, 255 }, { 255, 255, 255 });
+  //DrawLine(trianglePoint2, trianglePoint3, { 255, 255, 255 }, { 255, 255, 255 });
+  //DrawLine(trianglePoint3, trianglePoint1, { 255, 255, 255 }, { 255, 255, 255 });
+
+  Vec2<int> point = POINT;
+  SetPixel(point.x, point.y, { 255, 255, 255 });
+
+  if (IsInside(POINT, trianglePoint1, trianglePoint2, trianglePoint3))
+    std::cout << "Inside Triangle" << std::endl;
+  else
+    std::cout << "Not Inside Triangle" << std::endl;
+  
 
   for (unsigned int i_column = 0 ; i_column < _n_vertical; i_column++)
     for(unsigned int i_row = 0; i_row < _n_horizontal; i_row++){

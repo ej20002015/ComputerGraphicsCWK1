@@ -53,7 +53,7 @@ public:
                     const RGBVal& colour1, const RGBVal& colour2, const RGBVal& colour3);
 
   /*
-  \brief Implements the half plane test to determine whether a point is inside or outside the triangle
+  \brief Uses the half plane test to determine whether a point is inside or outside the triangle
   \param pixelCoordinatesPoint Pixel coordinates of the point to be tested
   \param trianglePoint1 Cartesian coordinates of the first point of the triangle
   \param trianglePoint2 Cartesian coordinates of the second point of the triangle
@@ -62,6 +62,15 @@ public:
   */
   bool IsInside(const Vec2<int>& pixelCoordinatesPoint, const Vec2<float>& trianglePoint1, const Vec2<float>& trianglePoint2,
                 const Vec2<float>& trianglePoint3);
+
+  /*
+  \brief Implements the half plane test to determine if a point is 'above' the line
+  \param pixelCoordinatesPoint Pixel coordinates of the point to be tested
+  \param point1 Cartesian coordinates of the first point of the line
+  \param point2 Cartesian coordinate of the second point of the line
+  \return If point is above the line: true; If not: false
+  */
+  bool IsAbove(const Vec2<int>& pixelCoordinatesPoint, const Vec2<float>& point1, const Vec2<float>& point2);
 
 protected:
 
