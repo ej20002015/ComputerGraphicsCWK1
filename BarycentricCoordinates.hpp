@@ -7,10 +7,10 @@
 struct BarycentricCoordinates
 {
   BarycentricCoordinates() = default;
-  BarycentricCoordinates(const Vec2& cartesianCoordinates, const Vec2& trianglePoint1,
-                         const Vec2& trianglePoint2, const Vec2& trianglePoint3);
+  BarycentricCoordinates(const Vec2<float>& cartesianCoordinates, const Vec2<float>& trianglePoint1,
+                         const Vec2<float>& trianglePoint2, const Vec2<float>& trianglePoint3);
 
-  Vec2 p, q, r;
+  Vec2<float> p, q, r;
   float alpha, beta, gamma;
 };
 

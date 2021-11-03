@@ -1,6 +1,6 @@
 #include "Mat2x2.hpp"
 
-Vec2 operator*(const Mat2x2& mat, const Vec2& vec)
+Vec2<float> operator*(const Mat2x2& mat, const Vec2<float>& vec)
 {
   float xComponent = mat.elements[0][0] * vec.x + mat.elements[0][1] * vec.y;
   float yComponent = mat.elements[1][0] * vec.x + mat.elements[1][1] * vec.y;
