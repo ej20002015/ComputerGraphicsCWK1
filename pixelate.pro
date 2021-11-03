@@ -8,4 +8,4 @@ INCLUDEPATH += .
 QT += gui widgets
 
 # Input
-SOURCES += mainwindow.cpp pixelwidget.cpp Vec2.cpp
+SOURCES += mainwindow.cpp pixelwidget.cpp Vec2.cpp BarycentricCoordinates.cpp Mat2x2.cpp

@@ -12,7 +12,10 @@
 #include <math.h>
 #include <algorithm>
 #include "pixelwidget.hpp"
+
 #include "Vec2.hpp"
+#include "BarycentricCoordinates.hpp"
+#include "PixelCoordinates.hpp"
 
 //#define LINE 2.999f, 49.999f, 49.999f, 2.999f
 //#define LINE 14.0f, 1.0f, 50.0f, 60.0f
@@ -42,6 +45,10 @@ void printVector(const std::vector<T>& vec, const std::string& vectorName)
 //#define LINE 0.9, 0.9, 1.1f, 69.5f
 //#define LINE 0.0, 0.0, 0.0, 75.0
 #define LINE { 0.0, 0.0 }, { 5.0, 10.0 }
+
+#define TRIANGLEP1 { 0.0f, 0.0f }
+#define TRIANGLEP2 { 2.0f, 69.0f }
+#define TRIANGLEP3 { 69.0f, 30.0f }
 
 //Draw a line between points 1 and 2, lighting all pixels that are touched by it
 //The top left of each pixel is (0,0) in pixel space
@@ -117,9 +124,9 @@ void PixelWidget::DrawLine(const Vec2& point1, const Vec2& point2, const RGBVal&
 
     //Calculate the interpolated colour at this point
     RGBVal interpolatedColour;
-    interpolatedColour._red   = static_cast<unsigned int>(((1 - t) * colour1._red + t * colour2._red));
-    interpolatedColour._green = static_cast<unsigned int>(((1 - t) * colour1._green + t * colour2._green));
-    interpolatedColour._blue  = static_cast<unsigned int>(((1 - t) * colour1._blue + t * colour2._blue));
+    interpolatedColour._red   = static_cast<unsigned int>((1 - t) * colour1._red + t * colour2._red);
+    interpolatedColour._green = static_cast<unsigned int>((1 - t) * colour1._green + t * colour2._green);
+    interpolatedColour._blue  = static_cast<unsigned int>((1 - t) * colour1._blue + t * colour2._blue);
 
     //Set the pixel
     std::cout << "Pixel: Coordinates(" << static_cast<int>(intersectionPoint.x) << ", " << static_cast<int>(intersectionPoint.y) << ") RGBColour(" <<
@@ -155,6 +162,74 @@ void PixelWidget::DrawLinePerfect(const Vec2& point1, const Vec2& point2, bool d
 
     SetPixel(static_cast<unsigned int>(x), static_cast<unsigned int>(y), {0, 0, 255});
   }
+}
+
+void PixelWidget::DrawTriangle(const Vec2& point1, const Vec2& point2, const Vec2& point3,
+                  const RGBVal& colour1, const RGBVal& colour2, const RGBVal& colour3)
+{
+  //First draw the perimeter of the triange:
+  DrawLine(point1, point2, colour1, colour2);
+  DrawLine(point2, point3, colour2, colour3);
+  DrawLine(point3, point1, colour3, colour1);
+
+  //Now loop over pixels, and convert them to barycentric coordinates
+  //(Since drawing the perimeter of the triangle will completely enclose all
+  //the pixels inside the triangle, we can just sample the top-left corner of
+  //every pixel (i.e. integer pixel coordinates can be used))
+
+  //We could loop over all pixels but that is unecessary.
+  //We only need to consider pixels that are between the min and max x-values of the points,
+  //and those between the min and max y-values of the points
+  int minX = static_cast<int>(std::min({ point1.x, point2.x, point3.x }));
+  int maxX = static_cast<int>(std::max({ point1.x, point2.x, point3.x }));
+
+  int minY = static_cast<int>(std::min({ point1.y, point2.y, point3.y }));
+  int maxY = static_cast<int>(std::max({ point1.y, point2.y, point3.y }));
+
+  std::vector<PixelCoordinates> pixelCoords;
+  std::vector<BarycentricCoordinates> baryCoords;
+
+  for (int x = minX; x <= maxX && x < static_cast<int>(_n_horizontal); x++)
+  {
+    for (int y = minY; y <= maxY && x < static_cast<int>(_n_vertical); y++)
+    {
+      Vec2 cartesianCoords = { static_cast<float>(x), static_cast<float>(y) };
+      baryCoords.push_back(BarycentricCoordinates(cartesianCoords, point1, point2, point3));
+      pixelCoords.push_back({ x, y });
+    }
+  }
+
+  //Loop through each point in barycentric coordinates and set the pixel if it lies in the triangle,
+  //that is, if the following conditions are satisfied:
+  //
+  // 0 < alpha < 1
+  // 0 < beta < 1
+  // 0 < gamma < 1
+  // alpha + beta < 1
+
+  for (int i = 0; i < baryCoords.size(); i++)
+  {
+    BarycentricCoordinates baryCoord = baryCoords[i];
+    PixelCoordinates pixelCoord = pixelCoords[i];
+
+    bool cond1 = baryCoord.alpha > 0.0f && baryCoord.alpha < 1.0f;
+    bool cond2 = baryCoord.beta > 0.0f && baryCoord.beta < 1.0f;
+    bool cond3 = baryCoord.gamma > 0.0f && baryCoord.gamma < 1.0f;
+    bool cond4 = baryCoord.alpha + baryCoord.beta < 1.0f;
+
+    if (cond1 && cond2 && cond3 && cond4)
+    {
+      //Calculate the interpolated colour at this point
+      RGBVal interpolatedColour;
+      interpolatedColour._red   = static_cast<unsigned int>(baryCoord.alpha * colour1._red + baryCoord.beta * colour2._red + baryCoord.gamma * colour3._red);
+      interpolatedColour._green = static_cast<unsigned int>(baryCoord.alpha * colour1._green + baryCoord.beta * colour2._green + baryCoord.gamma * colour3._green);
+      interpolatedColour._blue  = static_cast<unsigned int>(baryCoord.alpha * colour1._blue + baryCoord.beta * colour2._blue + baryCoord.gamma * colour3._blue);
+  
+      SetPixel(pixelCoord.x, pixelCoord.y, interpolatedColour);
+    }
+    
+  }
+
 }
 
 
@@ -211,8 +286,21 @@ void PixelWidget::paintEvent( QPaintEvent * )
   //DrawLine(14.0f, 1.0f, 50.0f, 60.0f);
   //SetPixel(2, 50, {255, 0, 0});
   //SetPixel(50, 2, {255, 0, 0});
-  DrawLinePerfect(LINE);
-  DrawLine(LINE, { 255, 255, 255 }, { 255, 255, 0 });
+  //DrawLinePerfect(LINE);
+  //DrawLine(LINE, { 255, 255, 255 }, { 255, 255, 0 });
+
+  Vec2 trianglePoint1 = TRIANGLEP1;
+  RGBVal triangleColour1 = { 255, 0, 0 };
+  Vec2 trianglePoint2 = TRIANGLEP2;
+  RGBVal triangleColour2 = { 0, 255, 0 };
+  Vec2 trianglePoint3 = TRIANGLEP3;
+  RGBVal triangleColour3 = { 0, 0, 255 };
+  DrawTriangle(trianglePoint1, trianglePoint2, trianglePoint3, triangleColour1, triangleColour2, triangleColour3);
+
+  DrawLine(trianglePoint1, trianglePoint2, { 255, 255, 255 }, { 255, 255, 255 });
+  DrawLine(trianglePoint2, trianglePoint3, { 255, 255, 255 }, { 255, 255, 255 });
+  DrawLine(trianglePoint3, trianglePoint1, { 255, 255, 255 }, { 255, 255, 255 });
+
   //DrawLine(0.0f, 0.0f, 30.0f, 30.0f);
 
   /* DrawLine(0.0f, 0.0f, 2.0f, 2.0f);
