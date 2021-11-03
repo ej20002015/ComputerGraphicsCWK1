@@ -55,8 +55,6 @@ void printVector(const std::vector<T>& vec, const std::string& vectorName)
 //segment that passes through the pixel
 void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2, const RGBVal& colour1, const RGBVal& colour2)
 {
-  std::cout << "Drawing Line\n" << std::endl;
-
   //Calculate the x and y integer lines that are intersected
 
   std::vector<int> xIntercepts = findIntegersInFloatRange(point1.x, point2.x);
@@ -128,30 +126,21 @@ void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2,
     interpolatedColour._blue  = static_cast<unsigned int>((1 - t) * colour1._blue + t * colour2._blue);
 
     //Set the pixel
-    std::cout << "Pixel: Coordinates(" << static_cast<int>(intersectionPoint.x) << ", " << static_cast<int>(intersectionPoint.y) << ") RGBColour(" <<
-    interpolatedColour._red << ", " << interpolatedColour._green << ", " << interpolatedColour._blue << ")" << std::endl;
     SetPixel(static_cast<int>(intersectionPoint.x), static_cast<int>(intersectionPoint.y), interpolatedColour);
   }
-
-  std::cout << "Drew line\n" << std::endl;
-  
 }
 
 void PixelWidget::DrawLinePerfect(const Vec2<float>& point1, const Vec2<float>& point2, bool debugInfo)
 {
-  // Line: x = (1 - t) * x1 + t * x2;
-  //       y = (1 - t) * y1 + t * y2;
-
   uint32_t steps = 10000000;
 
   for (unsigned int i = 0; i < steps + 1; i++)
   {
     float t = i * (1.0f / steps);
 
-    float x = ((1 - t) * point1.x + t * point2.x);// + (stepSize / 2.0f);
-    float y = ((1 - t) * point1.y + t * point2.y);// + (stepSize / 2.0f);
-    //std::cout << "epsilon value: " << std::numeric_limits<float>::epsilon();
-    //float y = (1 - t) * y1 + t * y2;
+    float x = ((1 - t) * point1.x + t * point2.x);
+    float y = ((1 - t) * point1.y + t * point2.y);
+    
     if (debugInfo)
     {
       printf("%.10f\n", x);
@@ -278,12 +267,8 @@ void PixelWidget::paintEvent( QPaintEvent * )
   // here the pixel values defined by the user are set in the pixel array
   DefinePixelValues();
 
-  // Draw a line from point (0.0, 0.0) to (30.0f, 15.0f)
-  //SetPixel(14, 1, {255, 0, 0});
-  //SetPixel(50, 60, {255, 0, 0});
-  //DrawLine(14.0f, 1.0f, 50.0f, 60.0f);
-  //SetPixel(2, 50, {255, 0, 0});
-  //SetPixel(50, 2, {255, 0, 0});
+  //TODO: consider where this code is suppose to be
+
   //DrawLinePerfect(LINE);
   //DrawLine(LINE, { 255, 255, 255 }, { 255, 255, 0 });
 
@@ -298,17 +283,6 @@ void PixelWidget::paintEvent( QPaintEvent * )
   DrawLine(trianglePoint1, trianglePoint2, { 255, 255, 255 }, { 255, 255, 255 });
   DrawLine(trianglePoint2, trianglePoint3, { 255, 255, 255 }, { 255, 255, 255 });
   DrawLine(trianglePoint3, trianglePoint1, { 255, 255, 255 }, { 255, 255, 255 });
-
-  //DrawLine(0.0f, 0.0f, 30.0f, 30.0f);
-
-  /* DrawLine(0.0f, 0.0f, 2.0f, 2.0f);
-  DrawLine(0.5f, 0.5f, 2.5f, 2.5f);
-  DrawLine(0.0f, 2.0f, 2.0f, 0.0f);
-  DrawLine(0.5f, 2.5f, 2.5f, 0.5f);
-  DrawLine(2.0f, 0.0f, 0.0f, 2.0f);
-  DrawLine(2.5f, 0.5f, 0.5f, 2.5f);
-  DrawLine(2.0f, 2.0f, 0.0f, 0.0f);
-  DrawLine(2.5f, 2.5f, 0.5f, 0.5f); */
 
   for (unsigned int i_column = 0 ; i_column < _n_vertical; i_column++)
     for(unsigned int i_row = 0; i_row < _n_horizontal; i_row++){
