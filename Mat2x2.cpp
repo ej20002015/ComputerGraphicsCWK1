@@ -18,8 +18,6 @@ Mat2x2 operator*(float v, const Mat2x2& mat)
   return matReturn;
 }
 
-//Will return the inverse of the matrix if invertible,
-//if not, then it will just return the matrix unchanged
 Mat2x2 Mat2x2::inverse() const
 {
   float deter = determinant();

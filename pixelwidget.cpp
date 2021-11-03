@@ -16,12 +16,6 @@
 #include "Vec2.hpp"
 #include "BarycentricCoordinates.hpp"
 
-//#define LINE 2.999f, 49.999f, 49.999f, 2.999f
-//#define LINE 14.0f, 1.0f, 50.0f, 60.0f
-//#define LINE 0.5f, 0.5f, 2.5f, 2.5f
-//#define LINE 
-//#define LINE 0.0f, 69.0f, 69.0f, 0.0f
-
 //TODO: Get rid of this stuff
 template<typename T>
 void printVector(const std::vector<T>& vec, const std::string& vectorName)
@@ -31,16 +25,6 @@ void printVector(const std::vector<T>& vec, const std::string& vectorName)
     std::cout << vectorName << " value: " << vec[i] << std::endl;
 }
 
-//#define LINE 0.0f, 0.0f, 2.0f, 2.0f
-//#define LINE 0.5f, 0.5f, 2.5f, 2.5f
-//#define LINE 0.0f, 2.0f, 2.0f, 0.0f
-//#define LINE 0.5f, 2.5f, 2.5f, 0.5f
-//#define LINE 2.0f, 0.0f, 0.0f, 2.0f
-//#define LINE 2.5f, 0.5f, 0.5f, 2.5f
-//#define LINE 2.0f, 2.0f, 0.0f, 0.0f
-//#define LINE 2.5f, 2.5f, 0.5f, 0.5f
-//#define LINE -10.5, -10.5, 2.5f, 2.5f
-//#define LINE 2.5, 2.5, 2.0f, 2.0f
 //#define LINE 0.9, 0.9, 1.1f, 69.5f
 //#define LINE 0.0, 0.0, 0.0, 75.0
 #define LINE { 0.0, 0.0 }, { 5.0, 10.0 }
@@ -49,10 +33,6 @@ void printVector(const std::vector<T>& vec, const std::string& vectorName)
 #define TRIANGLEP2 { 2.0f, 69.0f }
 #define TRIANGLEP3 { 69.0f, 30.0f }
 
-//Draw a line between points 1 and 2, lighting all pixels that are touched by it
-//The top left of each pixel is (0,0) in pixel space
-//The interpolated value (colour) of each pixel is scaled by the t value of the midpoint of the line
-//segment that passes through the pixel
 void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2, const RGBVal& colour1, const RGBVal& colour2)
 {
   //Calculate the x and y integer lines that are intersected
@@ -143,8 +123,8 @@ void PixelWidget::DrawLinePerfect(const Vec2<float>& point1, const Vec2<float>& 
     
     if (debugInfo)
     {
-      printf("%.10f\n", x);
-      printf("%.10f\n", y);
+      printf("X: %.10f\n", x);
+      printf("Y: %.10f\n", y);
       std::cout << "UINT:  (" << static_cast<unsigned int>(x) << ", " << static_cast<unsigned int>(y) << ")" << std::endl;
     }
 
@@ -216,7 +196,11 @@ void PixelWidget::DrawTriangle(const Vec2<float>& point1, const Vec2<float>& poi
       SetPixel(pixelCoord.x, pixelCoord.y, interpolatedColour);
     }    
   }
+}
 
+bool IsInside(const Vec2<int>& pixelCoordinatesPoint, const Vec2<float>& trianglePoint1, const Vec2<float>& trianglePoint2, const Vec2<float>& trianglePoint3)
+{
+  
 }
 
 
