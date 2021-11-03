@@ -36,8 +36,8 @@ public:
   // Use the body of this function to experiment with rendering algorithms
   void DefinePixelValues();
 
-  void DrawLine(float x1, float y1, float x2, float y2, const RGBVal& colour1, const RGBVal& colour2);
-  void DrawLinePerfect(float x1, float y1, float x2, float y2, bool debugInfo = false);
+  void DrawLine(const Vec2& point1, const Vec2& point2, const RGBVal& colour1, const RGBVal& colour2);
+  void DrawLinePerfect(const Vec2& point1, const Vec2& point2, bool debugInfo = false);
 
 protected:
 

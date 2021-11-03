@@ -41,20 +41,20 @@ void printVector(const std::vector<T>& vec, const std::string& vectorName)
 //#define LINE 2.5, 2.5, 2.0f, 2.0f
 //#define LINE 0.9, 0.9, 1.1f, 69.5f
 //#define LINE 0.0, 0.0, 0.0, 75.0
-#define LINE 0.0, 0.0, 5.0, 10.0
+#define LINE { 0.0, 0.0 }, { 5.0, 10.0 }
 
 //Draw a line between points 1 and 2, lighting all pixels that are touched by it
 //The top left of each pixel is (0,0) in pixel space
 //The interpolated value (colour) of each pixel is scaled by the t value of the midpoint of the line
 //segment that passes through the pixel
-void PixelWidget::DrawLine(float x1, float y1, float x2, float y2, const RGBVal& colour1, const RGBVal& colour2)
+void PixelWidget::DrawLine(const Vec2& point1, const Vec2& point2, const RGBVal& colour1, const RGBVal& colour2)
 {
   std::cout << "Drawing Line\n" << std::endl;
 
   //Calculate the x and y integer lines that are intersected
 
-  std::vector<int> xIntercepts = findIntegersInFloatRange(x1, x2);
-  std::vector<int> yIntercepts = findIntegersInFloatRange(y1, y2);
+  std::vector<int> xIntercepts = findIntegersInFloatRange(point1.x, point2.x);
+  std::vector<int> yIntercepts = findIntegersInFloatRange(point1.y, point2.y);
 
   //Only want to consider the positive and zero intersects
 
@@ -70,25 +70,25 @@ void PixelWidget::DrawLine(float x1, float y1, float x2, float y2, const RGBVal&
   std::vector<float> tValues;
 
   //Add the start and end t values to the vector since these need to be considered
-  //when calculating midpoints
+  //when calculating midpoints of line segments
   tValues.push_back(0.0f);
   tValues.push_back(1.0f);
 
-  if (x2 - x1)
+  if (point2.x - point1.x)
   {
     for (int i = 0; i < xIntercepts.size(); i++)
     {
       float x = static_cast<float>(xIntercepts[i]);
-      tValues.push_back((x - x1) / (x2 - x1));
+      tValues.push_back((x - point1.x) / (point2.x - point1.x));
     }
   }
   
-  if (y2 - y1)
+  if (point2.y - point1.y)
   {
     for (int i = 0; i < yIntercepts.size(); i++)
     {
       float y = static_cast<float>(yIntercepts[i]);
-      tValues.push_back((y - y1) / (y2 - y1));
+      tValues.push_back((y - point1.y) / (point2.y - point1.y));
     }
   }
 
@@ -111,8 +111,8 @@ void PixelWidget::DrawLine(float x1, float y1, float x2, float y2, const RGBVal&
     float t = tMidpoints[i];
     Vec2 intersectionPoint =
     {
-      (1 - t) * x1 + t * x2,
-      (1 - t) * y1 + t * y2
+      (1 - t) * point1.x + t * point2.x,
+      (1 - t) * point1.y + t * point2.y
     };
 
     //Calculate the interpolated colour at this point
@@ -131,7 +131,7 @@ void PixelWidget::DrawLine(float x1, float y1, float x2, float y2, const RGBVal&
   
 }
 
-void PixelWidget::DrawLinePerfect(float x1, float y1, float x2, float y2, bool debugInfo)
+void PixelWidget::DrawLinePerfect(const Vec2& point1, const Vec2& point2, bool debugInfo)
 {
   // Line: x = (1 - t) * x1 + t * x2;
   //       y = (1 - t) * y1 + t * y2;
@@ -142,8 +142,8 @@ void PixelWidget::DrawLinePerfect(float x1, float y1, float x2, float y2, bool d
   {
     float t = i * (1.0f / steps);
 
-    float x = ((1 - t) * x1 + t * x2);// + (stepSize / 2.0f);
-    float y = ((1 - t) * y1 + t * y2);// + (stepSize / 2.0f);
+    float x = ((1 - t) * point1.x + t * point2.x);// + (stepSize / 2.0f);
+    float y = ((1 - t) * point1.y + t * point2.y);// + (stepSize / 2.0f);
     //std::cout << "epsilon value: " << std::numeric_limits<float>::epsilon();
     //float y = (1 - t) * y1 + t * y2;
     if (debugInfo)
@@ -152,6 +152,7 @@ void PixelWidget::DrawLinePerfect(float x1, float y1, float x2, float y2, bool d
       printf("%.10f\n", y);
       std::cout << "UINT:  (" << static_cast<unsigned int>(x) << ", " << static_cast<unsigned int>(y) << ")" << std::endl;
     }
+
     SetPixel(static_cast<unsigned int>(x), static_cast<unsigned int>(y), {0, 0, 255});
   }
 }
