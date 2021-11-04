@@ -16,24 +16,11 @@
 #include "Vec2.hpp"
 #include "BarycentricCoordinates.hpp"
 
-//TODO: Get rid of this stuff
-template<typename T>
-void printVector(const std::vector<T>& vec, const std::string& vectorName)
-{
-  std::cout << "\n" << vectorName << ": \n" << std::endl;
-  for (int i = 0; i < vec.size(); i++)
-    std::cout << vectorName << " value: " << vec[i] << std::endl;
-}
-
-//#define LINE 0.9, 0.9, 1.1f, 69.5f
-//#define LINE 0.0, 0.0, 0.0, 75.0
 #define LINE { 0.0, 0.0 }, { 5.0, 10.0 }
 
 #define TRIANGLEP1 { 20.0, 3.0f }
 #define TRIANGLEP2 { 10.0f, 42.0f }
 #define TRIANGLEP3 { 50.0f, 64.0f }
-
-#define POINT { 25, 25 }
 
 void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2, const RGBVal& colour1, const RGBVal& colour2)
 {
@@ -45,10 +32,10 @@ void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2,
   //Only want to consider the positive and zero intersects
 
   xIntercepts.erase(std::remove_if(xIntercepts.begin(), xIntercepts.end(), [this](int v) -> bool {
-    return v < 0 || v > this->_n_horizontal;
+    return v < 0 || v > static_cast<int>(this->_n_horizontal);
   }), xIntercepts.end());
   yIntercepts.erase(std::remove_if(yIntercepts.begin(), yIntercepts.end(), [this](int v) -> bool { 
-    return v < 0 || v > this-> _n_vertical; 
+    return v < 0 || v > static_cast<int>(this-> _n_vertical); 
   }), yIntercepts.end());
 
   //Get t values of the line where it intersects the x and y integer lines
@@ -62,7 +49,7 @@ void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2,
 
   if (point2.x - point1.x)
   {
-    for (int i = 0; i < xIntercepts.size(); i++)
+    for (int i = 0; i < static_cast<int>(xIntercepts.size()); i++)
     {
       float x = static_cast<float>(xIntercepts[i]);
       tValues.push_back((x - point1.x) / (point2.x - point1.x));
@@ -71,7 +58,7 @@ void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2,
   
   if (point2.y - point1.y)
   {
-    for (int i = 0; i < yIntercepts.size(); i++)
+    for (int i = 0; i < static_cast<int>(yIntercepts.size()); i++)
     {
       float y = static_cast<float>(yIntercepts[i]);
       tValues.push_back((y - point1.y) / (point2.y - point1.y));
@@ -87,11 +74,11 @@ void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2,
   std::sort(tValues.begin(), tValues.end());
 
   std::vector<float> tMidpoints;
-  for (int i = 0; i < tValues.size() - 1; i++)
+  for (int i = 0; i < static_cast<int>(tValues.size()) - 1; i++)
     tMidpoints.push_back((tValues[i] + tValues[i + 1]) / 2.0f);
 
 
-  for (int i = 0; i < tMidpoints.size(); i++)
+  for (int i = 0; i < static_cast<int>(tMidpoints.size()); i++)
   {
     //Substitute the midpoint values of t back into the equation of the line to get the x and y coordinates of the pixel to set 
     float t = tMidpoints[i];
@@ -109,28 +96,6 @@ void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2,
 
     //Set the pixel
     SetPixel(static_cast<int>(intersectionPoint.x), static_cast<int>(intersectionPoint.y), interpolatedColour);
-  }
-}
-
-void PixelWidget::DrawLinePerfect(const Vec2<float>& point1, const Vec2<float>& point2, bool debugInfo)
-{
-  uint32_t steps = 10000000;
-
-  for (unsigned int i = 0; i < steps + 1; i++)
-  {
-    float t = i * (1.0f / steps);
-
-    float x = ((1 - t) * point1.x + t * point2.x);
-    float y = ((1 - t) * point1.y + t * point2.y);
-    
-    if (debugInfo)
-    {
-      printf("X: %.10f\n", x);
-      printf("Y: %.10f\n", y);
-      std::cout << "UINT:  (" << static_cast<unsigned int>(x) << ", " << static_cast<unsigned int>(y) << ")" << std::endl;
-    }
-
-    SetPixel(static_cast<unsigned int>(x), static_cast<unsigned int>(y), {0, 0, 255});
   }
 }
 
@@ -177,7 +142,7 @@ void PixelWidget::DrawTriangle(const Vec2<float>& point1, const Vec2<float>& poi
   // 0 < gamma < 1
   // alpha + beta < 1
 
-  for (int i = 0; i < baryCoords.size(); i++)
+  for (int i = 0; i < static_cast<int>(baryCoords.size()); i++)
   {
     BarycentricCoordinates baryCoord = baryCoords[i];
     Vec2<int> pixelCoord = pixelCoords[i];
@@ -237,9 +202,9 @@ void PixelWidget::writeCoordinatesToFile(const std::string& filepath, const Vec2
   outputFile << "Pixel Coordinates,Barycentric Coordinates Alpha,Barycentric Coordinates Beta,Barycentric Coordinates Gamma,Is Inside?" << std::endl;
 
   //Iterate over all pixel of the screen
-  for (int x = 0; x < _n_horizontal; x++)
+  for (int x = 0; x < static_cast<int>(_n_horizontal); x++)
   {
-    for (int y = 0; y < _n_vertical; y++)
+    for (int y = 0; y < static_cast<int>(_n_vertical); y++)
     {
       Vec2<float> pixelCoordinateFloat = { static_cast<float>(x), static_cast<float>(y) };
       Vec2<int> pixelCoordinate = { x, y };
@@ -265,9 +230,9 @@ void PixelWidget::writeToPPMFile(const std::string& filepath)
   outputFile << "P3 " << _n_horizontal << " " << _n_vertical << " " << 255 << std::endl;
 
   //Iterate over all pixels in the framebuffer, outputting the RGB values of each one
-  for (int y = 0; y < _n_vertical; y++)
+  for (int y = 0; y < static_cast<int>(_n_vertical); y++)
   {
-    for (int x = 0; x < _n_horizontal; x++)
+    for (int x = 0; x < static_cast<int>(_n_horizontal); x++)
     {
       //Every 4 pixels, go onto a new line in the file to ensure the 70 character limit per line of PPM is not violated
       if ((x + y) % 4 == 0 && (x + y))
@@ -341,14 +306,6 @@ void PixelWidget::paintEvent( QPaintEvent * )
   Vec2<float> trianglePoint3 = TRIANGLEP3;
   RGBVal triangleColour3 = { 0, 0, 255 };
   DrawTriangle(trianglePoint1, trianglePoint2, trianglePoint3, triangleColour1, triangleColour2, triangleColour3);
-
-  Vec2<int> point = POINT;
-  //SetPixel(point.x, point.y, { 255, 255, 255 });
-
-  if (IsInside(POINT, trianglePoint1, trianglePoint2, trianglePoint3))
-    std::cout << "Inside Triangle" << std::endl;
-  else
-    std::cout << "Not Inside Triangle" << std::endl;
 
   writeCoordinatesToFile("points.csv", TRIANGLEP1, TRIANGLEP2, TRIANGLEP3);
 

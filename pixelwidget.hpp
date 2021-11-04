@@ -46,9 +46,6 @@ public:
   */
   void DrawLine(const Vec2<float>& point1, const Vec2<float>& point2, const RGBVal& colour1, const RGBVal& colour2);
 
-  //TODO: remove
-  void DrawLinePerfect(const Vec2<float>& point1, const Vec2<float>& point2, bool debugInfo = false);
-
   /*
   \brief Rasterise a triangle on the screen using barycentric coordinates, interpolating the colour of each pixel
   \param point1 Cartesian coordinates of the first point of the triangle
