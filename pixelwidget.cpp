@@ -30,13 +30,34 @@ void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2,
   std::vector<int> yIntercepts = findIntegersInFloatRange(point1.y, point2.y);
 
   //Only want to consider the positive and zero intersects
+  //Would use std::remove_if but the compiler is ancient
 
-  xIntercepts.erase(std::remove_if(xIntercepts.begin(), xIntercepts.end(), [this](int v) -> bool {
+  std::vector<int>::iterator it = xIntercepts.begin();
+  while (it != xIntercepts.end())
+  {
+    int xIntercept = *it;
+    if (xIntercept < 0 || xIntercept > static_cast<int>(this->_n_horizontal))
+      it = xIntercepts.erase(it);
+    else
+      it++;
+  }
+
+  it = yIntercepts.begin();
+  while (it != yIntercepts.end())
+  {
+    int yIntercept = *it;
+    if (yIntercept < 0 || yIntercept > static_cast<int>(this->_n_vertical))
+      it = yIntercepts.erase(it);
+    else
+      it++;
+  }
+
+  /* xIntercepts.erase(std::remove_if(xIntercepts.begin(), xIntercepts.end(), [this](int v) -> bool {
     return v < 0 || v > static_cast<int>(this->_n_horizontal);
   }), xIntercepts.end());
   yIntercepts.erase(std::remove_if(yIntercepts.begin(), yIntercepts.end(), [this](int v) -> bool { 
     return v < 0 || v > static_cast<int>(this-> _n_vertical); 
-  }), yIntercepts.end());
+  }), yIntercepts.end()); */
 
   //Get t values of the line where it intersects the x and y integer lines
   
@@ -115,13 +136,13 @@ void PixelWidget::DrawTriangle(const Vec2<float>& point1, const Vec2<float>& poi
   //We could loop over all pixels but that is unecessary.
   //We only need to consider pixels that are between the min and max x-values of the points,
   //and those between the min and max y-values of the points
-  int minX = static_cast<int>(std::min({ point1.x, point2.x, point3.x }));
-  int maxX = static_cast<int>(std::max({ point1.x, point2.x, point3.x }));
+  int minX = static_cast<int>(std::min(point1.x, std::min(point2.x, point3.x)));
+  int maxX = static_cast<int>(std::max(point1.x, std::max(point2.x, point3.x)));
 
-  int minY = static_cast<int>(std::min({ point1.y, point2.y, point3.y }));
-  int maxY = static_cast<int>(std::max({ point1.y, point2.y, point3.y }));
+  int minY = static_cast<int>(std::min(point1.y, std::min(point2.y, point3.y)));
+  int maxY = static_cast<int>(std::max(point1.y, std::max(point2.y, point3.y)));
 
-  std::vector<Vec2<int>> pixelCoords;
+  std::vector<Vec2<int> > pixelCoords;
   std::vector<BarycentricCoordinates> baryCoords;
 
   for (int x = minX; x <= maxX && x < static_cast<int>(_n_horizontal); x++)
@@ -196,7 +217,7 @@ bool PixelWidget::IsAbove(const Vec2<int>& pixelCoordinatesPoint, const Vec2<flo
 
 void PixelWidget::writeCoordinatesToFile(const std::string& filepath, const Vec2<float>& trianglePoint1, const Vec2<float>& trianglePoint2, const Vec2<float>& trianglePoint3)
 {
-  std::ofstream outputFile(filepath);
+  std::ofstream outputFile(filepath.c_str());
 
   //Write CSV headers
   outputFile << "Pixel Coordinates,Barycentric Coordinates Alpha,Barycentric Coordinates Beta,Barycentric Coordinates Gamma,Is Inside?" << std::endl;
@@ -224,7 +245,7 @@ void PixelWidget::writeCoordinatesToFile(const std::string& filepath, const Vec2
 
 void PixelWidget::writeToPPMFile(const std::string& filepath)
 {
-  std::ofstream outputFile(filepath);
+  std::ofstream outputFile(filepath.c_str());
 
   //Write PPM Header
   outputFile << "P3 " << _n_horizontal << " " << _n_vertical << " " << 255 << std::endl;
@@ -300,11 +321,11 @@ void PixelWidget::paintEvent( QPaintEvent * )
   //DrawLine(LINE, { 255, 255, 255 }, { 255, 255, 0 });
 
   Vec2<float> trianglePoint1 = TRIANGLEP1;
-  RGBVal triangleColour1 = { 255, 0, 0 };
+  RGBVal triangleColour1 = RGBVal{ 255, 0, 0 };
   Vec2<float> trianglePoint2 = TRIANGLEP2;
-  RGBVal triangleColour2 = { 0, 255, 0 };
+  RGBVal triangleColour2 = RGBVal{ 0, 255, 0 };
   Vec2<float> trianglePoint3 = TRIANGLEP3;
-  RGBVal triangleColour3 = { 0, 0, 255 };
+  RGBVal triangleColour3 = RGBVal{ 0, 0, 255 };
   DrawTriangle(trianglePoint1, trianglePoint2, trianglePoint3, triangleColour1, triangleColour2, triangleColour3);
 
   writeCoordinatesToFile("points.csv", TRIANGLEP1, TRIANGLEP2, TRIANGLEP3);
