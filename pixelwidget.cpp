@@ -326,11 +326,13 @@ void PixelWidget::paintEvent( QPaintEvent * )
   RGBVal triangleColour2 = RGBVal{ 0, 255, 0 };
   Vec2<float> trianglePoint3 = TRIANGLEP3;
   RGBVal triangleColour3 = RGBVal{ 0, 0, 255 };
-  DrawTriangle(trianglePoint1, trianglePoint2, trianglePoint3, triangleColour1, triangleColour2, triangleColour3);
+  //DrawTriangle(trianglePoint1, trianglePoint2, trianglePoint3, triangleColour1, triangleColour2, triangleColour3);
 
-  writeCoordinatesToFile("points.csv", TRIANGLEP1, TRIANGLEP2, TRIANGLEP3);
+  //writeCoordinatesToFile("points.csv", TRIANGLEP1, TRIANGLEP2, TRIANGLEP3);
 
-  writeToPPMFile("image.ppm");
+  DrawLine({ 1.0f, 50.0f }, { 50.0f, 1.0f }, RGBVal{ 255, 255, 255 }, RGBVal{ 255, 255, 255 });
+
+  //writeToPPMFile("image.ppm");
 
   for (unsigned int i_column = 0 ; i_column < _n_vertical; i_column++)
     for(unsigned int i_row = 0; i_row < _n_horizontal; i_row++){
