@@ -52,13 +52,6 @@ void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2,
       it++;
   }
 
-  /* xIntercepts.erase(std::remove_if(xIntercepts.begin(), xIntercepts.end(), [this](int v) -> bool {
-    return v < 0 || v > static_cast<int>(this->_n_horizontal);
-  }), xIntercepts.end());
-  yIntercepts.erase(std::remove_if(yIntercepts.begin(), yIntercepts.end(), [this](int v) -> bool { 
-    return v < 0 || v > static_cast<int>(this-> _n_vertical); 
-  }), yIntercepts.end()); */
-
   //Get t values of the line where it intersects the x and y integer lines
   
   std::vector<float> tValues;
@@ -103,11 +96,33 @@ void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2,
   {
     //Substitute the midpoint values of t back into the equation of the line to get the x and y coordinates of the pixel to set 
     float t = tMidpoints[i];
-    Vec2<float> intersectionPoint =
+    Vec2<float> pointToSet =
     {
       (1 - t) * point1.x + t * point2.x,
       (1 - t) * point1.y + t * point2.y
     };
+
+    Vec2<int> pointToSetInt = { static_cast<int>(pointToSet.y), static_cast<int>(pointToSet.x) };
+
+    //If x and y are within a certain threshold to the next integer, then offset them to be at that integer
+
+    float threshold = 0.00001f;
+
+    if (ceilf(pointToSet.x) != ceilf(pointToSet.x + threshold))
+      pointToSetInt.x = ceilf(pointToSet.x);
+    else
+    {
+      if (floorf(pointToSet.x) != floorf(pointToSet.x - threshold))
+        pointToSetInt.x = floorf(pointToSet.x);
+    }
+
+    if (ceilf(pointToSet.y) != ceilf(pointToSet.y + threshold))
+      pointToSetInt.y = ceilf(pointToSet.y);
+    else
+    {
+      if (floorf(pointToSet.y) != floorf(pointToSet.y - threshold))
+        pointToSetInt.y = floorf(pointToSet.y);
+    }
 
     //Calculate the interpolated colour at this point
     RGBVal interpolatedColour;
@@ -116,7 +131,7 @@ void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2,
     interpolatedColour._blue  = static_cast<unsigned int>((1 - t) * colour1._blue + t * colour2._blue);
 
     //Set the pixel
-    SetPixel(static_cast<int>(intersectionPoint.x), static_cast<int>(intersectionPoint.y), interpolatedColour);
+    SetPixel(pointToSetInt.x, pointToSetInt.y, interpolatedColour);
   }
 }
 
