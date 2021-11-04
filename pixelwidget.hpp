@@ -49,6 +49,15 @@ public:
   //TODO: remove
   void DrawLinePerfect(const Vec2<float>& point1, const Vec2<float>& point2, bool debugInfo = false);
 
+  /*
+  \brief Rasterise a triangle on the screen using barycentric coordinates, interpolating the colour of each pixel
+  \param point1 Cartesian coordinates of the first point of the triangle
+  \param point2 Cartesian coordinates of the second point of the triangle
+  \param point3 Cartesian coordinates of the third point of the triangle
+  \param colour1 RGB value of the first point of the triangle
+  \param colour2 RGB value of the second point of the triangle
+  \param colour3 RGB value of the third point of the triangle
+  */
   void DrawTriangle(const Vec2<float>& point1, const Vec2<float>& point2, const Vec2<float>& point3,
                     const RGBVal& colour1, const RGBVal& colour2, const RGBVal& colour3);
 
@@ -64,13 +73,21 @@ public:
                 const Vec2<float>& trianglePoint3);
 
   /*
-  \brief Implements the half plane test to determine if a point is 'above' the line
-  \param pixelCoordinatesPoint Pixel coordinates of the point to be tested
-  \param point1 Cartesian coordinates of the first point of the line
-  \param point2 Cartesian coordinate of the second point of the line
-  \return If point is above the line: true; If not: false
+  \brief Writes a CSV list of barycentric coordinates for each pixel of the screen along with whether it is inside the triangle, 
+  to the specified file
+  \param filepath Filepath of the CSV file to write to. Will create the file if it doesn't exist.
+  \param trianglePoint1 Cartesian coordinates of the first point of the triangle
+  \param trianglePoint2 Cartesian coordinates of the second point of the triangle
+  \param trianglePoint3 Cartesian coordinates of the third point of the triangle
   */
-  bool IsAbove(const Vec2<int>& pixelCoordinatesPoint, const Vec2<float>& point1, const Vec2<float>& point2);
+  void writeCoordinatesToFile(const std::string& filepath, const Vec2<float>& trianglePoint1, const Vec2<float>& trianglePoint2,
+             const Vec2<float>& trianglePoint3);
+
+  /*
+  \brief Writes the current state of the framebuffer to a file using the PPM format
+  \param filepath Filepath of the PPM file to write to. Will create the file if it doesn't exist.
+  */
+ void writeToPPMFile(const std::string& filepath);
 
 protected:
 
@@ -85,6 +102,15 @@ private:
   \return A list of integers that lie within the range [x, y]
   */
   std::vector<int> findIntegersInFloatRange(float x, float y);
+
+  /*
+  \brief Implements the half plane test to determine if a point is 'above' the line
+  \param pixelCoordinatesPoint Pixel coordinates of the point to be tested
+  \param point1 Cartesian coordinates of the first point of the line
+  \param point2 Cartesian coordinate of the second point of the line
+  \return If point is above the line: true; If not: false
+  */
+  bool IsAbove(const Vec2<int>& pixelCoordinatesPoint, const Vec2<float>& point1, const Vec2<float>& point2);
 
 
 private:

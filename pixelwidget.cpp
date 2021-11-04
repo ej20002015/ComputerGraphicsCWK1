@@ -29,9 +29,9 @@ void printVector(const std::vector<T>& vec, const std::string& vectorName)
 //#define LINE 0.0, 0.0, 0.0, 75.0
 #define LINE { 0.0, 0.0 }, { 5.0, 10.0 }
 
-#define TRIANGLEP1 { 20.5f, 20.5f }
-#define TRIANGLEP2 { 10.5f, 30.5f }
-#define TRIANGLEP3 { 30.5f, 30.0f }
+#define TRIANGLEP1 { 20.0, 3.0f }
+#define TRIANGLEP2 { 10.0f, 42.0f }
+#define TRIANGLEP3 { 50.0f, 64.0f }
 
 #define POINT { 25, 25 }
 
@@ -204,7 +204,7 @@ bool PixelWidget::IsInside(const Vec2<int>& pixelCoordinatesPoint, const Vec2<fl
 {
   //Determine whether the pixel coordinate is 'above' (same side as the normal pointing inwards) all 3 lines of the triangle
   //If so, it is in the triangle
-  
+
   bool aboveLine1 = IsAbove(pixelCoordinatesPoint, trianglePoint1, trianglePoint2);
   bool aboveLine2 = IsAbove(pixelCoordinatesPoint, trianglePoint2, trianglePoint3);
   bool aboveLine3 = IsAbove(pixelCoordinatesPoint, trianglePoint3, trianglePoint1);
@@ -229,6 +229,58 @@ bool PixelWidget::IsAbove(const Vec2<int>& pixelCoordinatesPoint, const Vec2<flo
     return false;
 }
 
+void PixelWidget::writeCoordinatesToFile(const std::string& filepath, const Vec2<float>& trianglePoint1, const Vec2<float>& trianglePoint2, const Vec2<float>& trianglePoint3)
+{
+  std::ofstream outputFile(filepath);
+
+  //Write CSV headers
+  outputFile << "Pixel Coordinates,Barycentric Coordinates Alpha,Barycentric Coordinates Beta,Barycentric Coordinates Gamma,Is Inside?" << std::endl;
+
+  //Iterate over all pixel of the screen
+  for (int x = 0; x < _n_horizontal; x++)
+  {
+    for (int y = 0; y < _n_vertical; y++)
+    {
+      Vec2<float> pixelCoordinateFloat = { static_cast<float>(x), static_cast<float>(y) };
+      Vec2<int> pixelCoordinate = { x, y };
+      BarycentricCoordinates baryCoordinate(pixelCoordinateFloat, trianglePoint1, trianglePoint2, trianglePoint3);
+      bool isInside = IsInside(pixelCoordinate, trianglePoint1, trianglePoint2, trianglePoint3);
+      
+      outputFile << "\"(" << pixelCoordinate.x << ", " << pixelCoordinate.y << ")\",";
+      outputFile << baryCoordinate.alpha << ",";
+      outputFile << baryCoordinate.beta << ",";
+      outputFile << baryCoordinate.gamma << ",";
+      outputFile << isInside << std::endl;
+    }
+  }
+
+  outputFile.close();
+}
+
+void PixelWidget::writeToPPMFile(const std::string& filepath)
+{
+  std::ofstream outputFile(filepath);
+
+  //Write PPM Header
+  outputFile << "P3 " << _n_horizontal << " " << _n_vertical << " " << 255 << std::endl;
+
+  //Iterate over all pixels in the framebuffer, outputting the RGB values of each one
+  for (int y = 0; y < _n_vertical; y++)
+  {
+    for (int x = 0; x < _n_horizontal; x++)
+    {
+      //Every 4 pixels, go onto a new line in the file to ensure the 70 character limit per line of PPM is not violated
+      if ((x + y) % 4 == 0 && (x + y))
+        outputFile << std::endl;
+      
+      outputFile << _vec_rects[x][y]._red << " ";
+      outputFile << _vec_rects[x][y]._green << " ";
+      outputFile << _vec_rects[x][y]._blue << "  ";
+    }
+  }
+
+  outputFile.close();
+}
 
 void PixelWidget::DefinePixelValues(){ //add pixels here; write methods like this for the assignments
 }
@@ -290,18 +342,17 @@ void PixelWidget::paintEvent( QPaintEvent * )
   RGBVal triangleColour3 = { 0, 0, 255 };
   DrawTriangle(trianglePoint1, trianglePoint2, trianglePoint3, triangleColour1, triangleColour2, triangleColour3);
 
-  //DrawLine(trianglePoint1, trianglePoint2, { 255, 255, 255 }, { 255, 255, 255 });
-  //DrawLine(trianglePoint2, trianglePoint3, { 255, 255, 255 }, { 255, 255, 255 });
-  //DrawLine(trianglePoint3, trianglePoint1, { 255, 255, 255 }, { 255, 255, 255 });
-
   Vec2<int> point = POINT;
-  SetPixel(point.x, point.y, { 255, 255, 255 });
+  //SetPixel(point.x, point.y, { 255, 255, 255 });
 
   if (IsInside(POINT, trianglePoint1, trianglePoint2, trianglePoint3))
     std::cout << "Inside Triangle" << std::endl;
   else
     std::cout << "Not Inside Triangle" << std::endl;
-  
+
+  writeCoordinatesToFile("points.csv", TRIANGLEP1, TRIANGLEP2, TRIANGLEP3);
+
+  writeToPPMFile("image.ppm");
 
   for (unsigned int i_column = 0 ; i_column < _n_vertical; i_column++)
     for(unsigned int i_row = 0; i_row < _n_horizontal; i_row++){

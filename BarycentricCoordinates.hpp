@@ -22,7 +22,7 @@ struct BarycentricCoordinates
                          const Vec2<float>& trianglePoint2, const Vec2<float>& trianglePoint3);
 
   Vec2<float> p, q, r; //Cartesian coordinates of the points defining the triangle
-  float alpha, beta, gamma; //Barcentric coordinates of the point withing the triangle
+  float alpha, beta, gamma; //Barycentric coordinates of the point withing the triangle
 };
 
 #endif

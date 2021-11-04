@@ -21,7 +21,6 @@ BarycentricCoordinates::BarycentricCoordinates(const Vec2<float>& cartesianCoord
     cartesianCoordinates.y - r.y,
   };
 
-
   //Compute alpha, beta and gamma by multiplying both sides by T inverse
   Vec2<float> alphaAndBeta = T.inverse() * b;
 
