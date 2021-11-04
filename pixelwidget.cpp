@@ -16,7 +16,8 @@
 #include "Vec2.hpp"
 #include "BarycentricCoordinates.hpp"
 
-#define LINE { 0.0, 0.0 }, { 5.0, 10.0 }
+#define LINE { 4.0f, 50.0f }, { 15.0f, 1.0f }
+//#define LINE { 1.0f, 50.0f }, { 50.0f, 1.0f }
 
 #define TRIANGLEP1 { 20.0, 3.0f }
 #define TRIANGLEP2 { 10.0f, 42.0f }
@@ -91,7 +92,6 @@ void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2,
   for (int i = 0; i < static_cast<int>(tValues.size()) - 1; i++)
     tMidpoints.push_back((tValues[i] + tValues[i + 1]) / 2.0f);
 
-
   for (int i = 0; i < static_cast<int>(tMidpoints.size()); i++)
   {
     //Substitute the midpoint values of t back into the equation of the line to get the x and y coordinates of the pixel to set 
@@ -102,7 +102,7 @@ void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2,
       (1 - t) * point1.y + t * point2.y
     };
 
-    Vec2<int> pointToSetInt = { static_cast<int>(pointToSet.y), static_cast<int>(pointToSet.x) };
+    Vec2<int> pointToSetInt = { static_cast<int>(pointToSet.x), static_cast<int>(pointToSet.y) };
 
     //If x and y are within a certain threshold to the next integer, then offset them to be at that integer
 
@@ -129,6 +129,8 @@ void PixelWidget::DrawLine(const Vec2<float>& point1, const Vec2<float>& point2,
     interpolatedColour._red   = static_cast<unsigned int>((1 - t) * colour1._red + t * colour2._red);
     interpolatedColour._green = static_cast<unsigned int>((1 - t) * colour1._green + t * colour2._green);
     interpolatedColour._blue  = static_cast<unsigned int>((1 - t) * colour1._blue + t * colour2._blue);
+
+    std::cout << "(x, y): (" << pointToSetInt.x << ", " << pointToSetInt.y << ")" << std::endl;
 
     //Set the pixel
     SetPixel(pointToSetInt.x, pointToSetInt.y, interpolatedColour);
@@ -345,7 +347,7 @@ void PixelWidget::paintEvent( QPaintEvent * )
 
   //writeCoordinatesToFile("points.csv", TRIANGLEP1, TRIANGLEP2, TRIANGLEP3);
 
-  DrawLine({ 1.0f, 50.0f }, { 50.0f, 1.0f }, RGBVal{ 255, 255, 255 }, RGBVal{ 255, 255, 255 });
+  DrawLine(LINE, RGBVal{ 255, 255, 255 }, RGBVal{ 255, 255, 255 });
 
   //writeToPPMFile("image.ppm");
 
