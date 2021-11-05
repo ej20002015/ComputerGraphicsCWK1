@@ -16,10 +16,7 @@
 #include "Vec2.hpp"
 #include "BarycentricCoordinates.hpp"
 
-#define LINE { 4.0f, 50.0f }, { 15.0f, 1.0f }
-//#define LINE { 1.0f, 50.0f }, { 50.0f, 1.0f }
-
-#define TRIANGLEP1 { 20.0, 3.0f }
+#define TRIANGLEP1 { 20.0f, 3.0f }
 #define TRIANGLEP2 { 10.0f, 42.0f }
 #define TRIANGLEP3 { 50.0f, 64.0f }
 
@@ -150,7 +147,7 @@ void PixelWidget::DrawTriangle(const Vec2<float>& point1, const Vec2<float>& poi
   //the pixels inside the triangle, we can just sample the top-left corner of
   //every pixel (i.e. integer pixel coordinates can be used))
 
-  //We could loop over all pixels but that is unecessary.
+  //We could loop over all pixels but that is unnecessary.
   //We only need to consider pixels that are between the min and max x-values of the points,
   //and those between the min and max y-values of the points
   int minX = static_cast<int>(std::min(point1.x, std::min(point2.x, point3.x)));
@@ -332,10 +329,8 @@ void PixelWidget::paintEvent( QPaintEvent * )
   // here the pixel values defined by the user are set in the pixel array
   DefinePixelValues();
 
-  //TODO: consider where this code is suppose to be
 
-  //DrawLinePerfect(LINE);
-  //DrawLine(LINE, { 255, 255, 255 }, { 255, 255, 0 });
+  //My Demo Code
 
   Vec2<float> trianglePoint1 = TRIANGLEP1;
   RGBVal triangleColour1 = RGBVal{ 255, 0, 0 };
@@ -343,13 +338,11 @@ void PixelWidget::paintEvent( QPaintEvent * )
   RGBVal triangleColour2 = RGBVal{ 0, 255, 0 };
   Vec2<float> trianglePoint3 = TRIANGLEP3;
   RGBVal triangleColour3 = RGBVal{ 0, 0, 255 };
-  //DrawTriangle(trianglePoint1, trianglePoint2, trianglePoint3, triangleColour1, triangleColour2, triangleColour3);
+  DrawTriangle(trianglePoint1, trianglePoint2, trianglePoint3, triangleColour1, triangleColour2, triangleColour3);
 
-  //writeCoordinatesToFile("points.csv", TRIANGLEP1, TRIANGLEP2, TRIANGLEP3);
+  writeCoordinatesToFile("points.csv", TRIANGLEP1, TRIANGLEP2, TRIANGLEP3);
 
-  DrawLine(LINE, RGBVal{ 255, 255, 255 }, RGBVal{ 255, 255, 255 });
-
-  //writeToPPMFile("image.ppm");
+  writeToPPMFile("image.ppm");
 
   for (unsigned int i_column = 0 ; i_column < _n_vertical; i_column++)
     for(unsigned int i_row = 0; i_row < _n_horizontal; i_row++){
