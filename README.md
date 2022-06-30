@@ -1,6 +1,3 @@
-# **Computer Graphics Coursework 1 Report**
+# **Computer Graphics Coursework 1**
 
-## **Assignment 1**
-
-### Choosing a step size
-
+This coursework focuses on rasterizing triangles and lines.
